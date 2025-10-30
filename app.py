@@ -16,9 +16,9 @@ class Vote(db.Model):
 # -------------------------------
 # File Paths (use raw strings to avoid escape issues)
 # -------------------------------
-INDEX_HTML = r"C:\\Users\\Ritunjay Deo\\OneDrive\Documents\\Vote System\\templates\\index.html"
-VOTE_HTML = r"C:\\Users\Ritunjay Deo\\OneDrive\Documents\\Vote System\\templates\\vote.html"
-RESULTS_HTML = r"C:\\Users\\Ritunjay Deo\\OneDrive\Documents\\Vote System\\templates\\results.html"
+INDEX_HTML = "./index.html"
+VOTE_HTML = "./vote.html"
+RESULTS_HTML = "./results.html"
 
 # Function to read HTML files safely
 def load_html(file_path):
@@ -76,4 +76,5 @@ def reset_votes():
 if __name__ == '__main__':
     with app.app_context():       # ✅ FIX: create database within app context
         db.create_all()
+
     app.run(host='0.0.0.0', port=5000, debug=True)
