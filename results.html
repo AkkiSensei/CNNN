@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SecureVote - Live Election Results</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* Reset & Base */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #f8f9fc;
+      color: #1a1a1a;
+      line-height: 1.6;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .container {
+      background: #ffffff;
+      border-radius: 16px;
+      padding: 0;
+      max-width: 900px;
+      width: 100%;
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+      transition: all 0.3s ease;
+    }
+
+    .container:hover {
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+    }
+
+    /* Header */
+    header {
+      background: linear-gradient(135deg, #4f46e5, #7c3aed);
+      color: white;
+      padding: 2.5rem 2rem;
+      text-align: center;
+    }
+
+    h2 {
+      font-size: 2.6rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+
+    .subtitle {
+      font-size: 1.1rem;
+      opacity: 0.9;
+      font-weight: 500;
+    }
+
+    .live-indicator {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.9rem;
+      margin-top: 0.75rem;
+      color: #fbbf24;
+      font-weight: 600;
+    }
+
+    .live-dot {
+      width: 10px;
+      height: 10px;
+      background: #ef4444;
+      border-radius: 50%;
+      animation: pulse 1.5s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+
+    /* Main Content */
+    main {
+      padding: 2.5rem;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0 12px;
+      margin: 1.5rem 0;
+    }
+
+    thead th {
+      background: #f1f5f9;
+      color: #1a1a1a;
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 0.85rem;
+      letter-spacing: 0.8px;
+      padding: 1rem 1.5rem;
+      text-align: left;
+      border-bottom: 2px solid #e2e8f0;
+    }
+
+    tbody tr {
+      background: #f8f9fc;
+      transition: all 0.3s ease;
+      border-radius: 12px;
+    }
+
+    tbody tr:hover {
+      background: #eef2ff;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(79, 70, 229, 0.1);
+    }
+
+    td {
+      padding: 1.4rem 1.5rem;
+      vertical-align: middle;
+    }
+
+    .candidate-name {
+      font-weight: 600;
+      color: #1a1a1a;
+      font-size: 1.1rem;
+    }
+
+    .vote-count {
+      font-weight: 700;
+      color: #1a1a1a;
+      font-size: 1.2rem;
+      text-align: right;
+    }
+
+    .vote-bar-container {
+      display: inline-block;
+      width: 180px;
+      height: 12px;
+      background: #e2e8f0;
+      border-radius: 6px;
+      overflow: hidden;
+      margin-left: 16px;
+      vertical-align: middle;
+      box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    .vote-bar {
+      height: 100%;
+      background: linear-gradient(90deg, #4f46e5, #7c3aed);
+      border-radius: 6px;
+      transition: width 1.8s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .vote-bar::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+      transform: translateX(-100%);
+      animation: shine 2s infinite;
+    }
+
+    @keyframes shine {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(100%); }
+    }
+
+    /* Back Link */
+    .back-link {
+      display: inline-block;
+      margin-top: 1.5rem;
+      padding: 0.9rem 2rem;
+      background: transparent;
+      color: #4f46e5;
+      text-decoration: none;
+      border: 2px solid #4f46e5;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+    }
+
+    .back-link:hover {
+      background: #eef2ff;
+      color: #4338ca;
+      border-color: #4338ca;
+      transform: translateY(-2px);
+    }
+
+    /* Footer */
+    footer {
+      text-align: center;
+      padding: 1.8rem;
+      background: #f1f5f9;
+      color: #6b7280;
+      font-size: 0.9rem;
+      font-weight: 500;
+      border-top: 1px solid #e2e8f0;
+    }
+
+    footer a {
+      color: #4f46e5;
+      text-decoration: none;
+    }
+
+    footer a:hover {
+      text-decoration: underline;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      h2 { font-size: 2.2rem; }
+      .vote-bar-container { width: 120px; }
+      th, td { padding: 1rem; font-size: 0.9rem; }
+      .candidate-name { font-size: 1rem; }
+      .vote-count { font-size: 1.1rem; }
+    }
+
+    @media (max-width: 480px) {
+      header { padding: 2rem 1.5rem; }
+      main { padding: 1.8rem; }
+      .vote-bar-container { width: 80px; }
+      .back-link { padding: 0.8rem 1.5rem; font-size: 0.95rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <header>
+      <h2>Election Results</h2>
+      <p class="subtitle">Live, Verified, and Transparent</p>
+      <div class="live-indicator">
+        <div class="live-dot"></div>
+        <span>Updating in Real-Time</span>
+      </div>
+    </header>
+
+    <main>
+      <table>
+        <thead>
+          <tr>
+            <th>Candidate</th>
+            <th>Votes</th>
+          </tr>
+        </thead>
+        <tbody>
+          {{results_table}}
+          <!-- Example (replace with dynamic data) -->
+          <!--
+          <tr>
+            <td><span class="candidate-name">Vladimir Putin</span></td>
+            <td>
+              <span class="vote-count">666,666</span>
+              <div class="vote-bar-container">
+                <div class="vote-bar" style="width: 95%;"></div>
+              </div>
+            </td>
+          </tr>
+          -->
+        </tbody>
+      </table>
+
+      <a href="/" class="back-link">Back to Voting</a>
+    </main>
+
+    <footer>
+      <p>
+        Last updated: <span id="timestamp"></span> • 
+        <a href="/audit">View Audit Trail</a>
+      </p>
+    </footer>
+  </div>
+
+  <script>
+    // Update timestamp every second
+    function updateTimestamp() {
+      const ts = document.getElementById('timestamp');
+      ts.textContent = new Date().toLocaleString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit'
+      });
+    }
+    updateTimestamp();
+    setInterval(updateTimestamp, 1000);
+
+    // Animate vote bars on load
+    document.addEventListener('DOMContentLoaded', () => {
+      const bars = document.querySelectorAll('.vote-bar');
+      bars.forEach((bar, i) => {
+        const targetWidth = bar.style.width;
+        bar.style.width = '0%';
+        setTimeout(() => {
+          bar.style.width = targetWidth;
+        }, 300 + i * 200);
+      });
+    });
+  </script>
+
+</body>
+</html>
